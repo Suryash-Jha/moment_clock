@@ -23,12 +23,15 @@ import EventSeatIcon from '@mui/icons-material/EventSeat';
 import { ToastContainer, toast } from 'react-toastify';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { AES } from 'crypto-js';
+
 
 import dayjs from 'dayjs';
 
 const CreateCountdownPage = () => {
   const [selectedFont, setSelectedFont] = useState('Roboto');
   const [eventName, setEventName] = useState('');
+  const [eventTime, setEventTime] = useState('');
   const [generatedLink, setGeneratedLink] = useState('');
   const [eventType, setEventType] = useState('UAT');
 
@@ -37,18 +40,29 @@ const CreateCountdownPage = () => {
     { name: 'UAT', image: 'https://via.placeholder.com/150', icon: <DeveloperModeIcon color="warning" /> },
     { name: 'Production', image: 'https://via.placeholder.com/150', icon: <RocketLaunchIcon color="warning" /> },
     { name: 'Custom', image: 'https://via.placeholder.com/150', icon: <EventSeatIcon color="warning" /> },
-    { name: 'UAT', image: 'https://via.placeholder.com/150', icon: <DeveloperModeIcon color="warning" /> },
-    { name: 'Production', image: 'https://via.placeholder.com/150', icon: <RocketLaunchIcon color="warning" /> },
-    { name: 'Custom', image: 'https://via.placeholder.com/150', icon: <EventSeatIcon color="warning" /> },
+
   ];
 
   const handleFontChange = (event) => {
     setSelectedFont(event.target.value);
   };
-  const handleGenerateLink= ()=>{
-
+  const encryptString= (data) =>{
+    const encryptedData = AES.encrypt(data, 'secure-key111').toString();
+    return encryptedData
   }
 
+  const handleGenerateLink= ()=>{
+    const body={
+     eventName,
+     eventTime,
+     eventType
+      
+    }
+    const bodyString= JSON.stringify(body)
+    const encryptedData= encryptString(bodyString)
+    const baseURL= 'https://momentclock-web.netlify.app/view?timer='
+    setGeneratedLink(baseURL+encryptedData)
+  }
   return (
 
     <Sheet
@@ -138,7 +152,7 @@ const CreateCountdownPage = () => {
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
 
-          <DateTimePicker defaultValue={dayjs(Date.now())} sx={{
+          <DateTimePicker defaultValue={dayjs(Date.now())} onChange={(e:any)=> setEventTime( e.$d.getTime())} sx={{
             color: '#ff0000'
           }} />
         </LocalizationProvider>
@@ -206,7 +220,10 @@ const CreateCountdownPage = () => {
             width: 'clamp(min(100%, 200px), 50%, min(100%, 300px))',
           }}
         >
-          <Button variant="solid" color="warning" onClick={() => toast.success('Link Copied!')}>
+          <Button variant="solid" color="warning" onClick={() =>{
+            handleGenerateLink()
+            toast.success('Link Copied!')
+          }}>
             Copy 🧷
           </Button>
           <Button variant="plain" color="neutral">
