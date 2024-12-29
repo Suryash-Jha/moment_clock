@@ -32,7 +32,6 @@ const CreateCountdownPage = () => {
   const [selectedFont, setSelectedFont] = useState('Roboto');
   const [eventName, setEventName] = useState('');
   const [eventTime, setEventTime] = useState('');
-  const [generatedLink, setGeneratedLink] = useState('');
   const [eventType, setEventType] = useState('UAT');
 
   const categories = [
@@ -59,9 +58,11 @@ const CreateCountdownPage = () => {
       
     }
     const bodyString= JSON.stringify(body)
-    const encryptedData= encryptString(bodyString)
+    const encryptedData= encodeURIComponent(encryptString(bodyString))
+    
+    // const baseURL= 'http://localhost:3000/view?timer='
     const baseURL= 'https://momentclock-web.netlify.app/view?timer='
-    setGeneratedLink(baseURL+encryptedData)
+    navigator.clipboard.writeText(baseURL+encryptedData)
   }
   return (
 

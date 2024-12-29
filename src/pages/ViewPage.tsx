@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AspectRatio,
   Button,
@@ -24,17 +24,44 @@ import { ToastContainer, toast } from 'react-toastify';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AES } from 'crypto-js';
-
-
+import crypto from 'crypto-js';
 import dayjs from 'dayjs';
 
 const ViewPage = () => {
+  const urlSearchString = window.location.search;
+  const params :any = new URLSearchParams(urlSearchString);
+  const encryptedData= decodeURIComponent(params.get('timer'))
   const [selectedFont, setSelectedFont] = useState('Roboto');
+  const [data, setData] = useState<any>();
   const [eventName, setEventName] = useState('');
   const [eventTime, setEventTime] = useState('');
   const [generatedLink, setGeneratedLink] = useState('');
   const [eventType, setEventType] = useState('UAT');
+const decryptMessage= (encryptString)=>{
+  const decryptedData = AES.decrypt(encryptedData, 'secure-key111').toString(crypto.enc.Utf8)
+  console.log(decryptedData, '++_++')
 
+  
+return decryptedData
+}
+useEffect(()=>{
+  if(encryptedData){
+    const  bodyString= decryptMessage(encryptedData)
+    const body= JSON.parse(bodyString)
+    setData(body)
+  }
+}, [encryptedData])
+
+useEffect(()=>{
+  if(data){
+    // const parsedData= JSON.parse(data)
+    console.log(data, '+__+)___', typeof data, '__+__')
+    setEventName(data?.eventName)
+    setEventTime(data?.eventTime)
+    setEventType(data?.eventType)
+  }
+}, [data])
+console.log(eventTime, '+++', dayjs(Number(eventTime)*1000))
   const categories = [
     { name: 'Birthday', image: 'https://via.placeholder.com/150', icon: <CelebrationIcon color="warning"/> },
     { name: 'UAT', image: 'https://via.placeholder.com/150', icon: <DeveloperModeIcon color="warning" /> },
@@ -152,9 +179,13 @@ const ViewPage = () => {
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
 
-          <DateTimePicker defaultValue={dayjs(Date.now())} onChange={(e:any)=> setEventTime( e.$d.getTime())} sx={{
+          <DateTimePicker 
+          defaultValue={dayjs(Date.now())} 
+          onChange={(e:any)=> setEventTime( e.$d.getTime())} 
+          sx={{
             color: '#ff0000'
-          }} />
+          }} 
+          value={dayjs(Number(eventTime)*1000)}/>
         </LocalizationProvider>
         <Box
           sx={{

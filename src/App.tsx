@@ -9,11 +9,10 @@ function App() {
   return (
     <BrowserRouter>
     <Routes>
-      {/* <Route path="/" element={<Layout />}> */}
+      <Route path="/">
         <Route index element={<HomePage />} />
         <Route path="view" element={<ViewPage />} />
-
-      {/* </Route> */}
+      </Route>
     </Routes>
   </BrowserRouter>
   );
