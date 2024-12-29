@@ -12,6 +12,8 @@ import {
   Select,
   Option,
   Box,
+  CssVarsProvider,
+  CssBaseline,
 } from '@mui/joy';
 import TimelapseIcon from '@mui/icons-material/Timelapse';
 import CelebrationIcon from '@mui/icons-material/Celebration';
@@ -27,9 +29,14 @@ import dayjs from 'dayjs';
 const CreateCountdownPage = () => {
   const [selectedFont, setSelectedFont] = useState('Roboto');
   const [eventName, setEventName] = useState('');
+  const [generatedLink, setGeneratedLink] = useState('');
+  const [eventType, setEventType] = useState('UAT');
 
   const categories = [
-    { name: 'Birthday', image: 'https://via.placeholder.com/150', icon: <CelebrationIcon color="warning" /> },
+    { name: 'Birthday', image: 'https://via.placeholder.com/150', icon: <CelebrationIcon color="warning"/> },
+    { name: 'UAT', image: 'https://via.placeholder.com/150', icon: <DeveloperModeIcon color="warning" /> },
+    { name: 'Production', image: 'https://via.placeholder.com/150', icon: <RocketLaunchIcon color="warning" /> },
+    { name: 'Custom', image: 'https://via.placeholder.com/150', icon: <EventSeatIcon color="warning" /> },
     { name: 'UAT', image: 'https://via.placeholder.com/150', icon: <DeveloperModeIcon color="warning" /> },
     { name: 'Production', image: 'https://via.placeholder.com/150', icon: <RocketLaunchIcon color="warning" /> },
     { name: 'Custom', image: 'https://via.placeholder.com/150', icon: <EventSeatIcon color="warning" /> },
@@ -38,8 +45,12 @@ const CreateCountdownPage = () => {
   const handleFontChange = (event) => {
     setSelectedFont(event.target.value);
   };
+  const handleGenerateLink= ()=>{
+
+  }
 
   return (
+
     <Sheet
       sx={{
         height: '100vh',
@@ -85,7 +96,7 @@ const CreateCountdownPage = () => {
           </AspectRatio>
         </CardOverflow>
 
-        <Typography
+        {/* <Typography
           sx={{
             mt: 'calc(var(--icon-size) / 2)',
             fontSize: {
@@ -99,22 +110,8 @@ const CreateCountdownPage = () => {
           }}
         >
           Create Your Countdown
-          {/* <Select
-          value={selectedFont}
-          onChange={handleFontChange}
-          color="warning"
-          variant="outlined"
-          size="lg"
-          sx={{
-            marginBottom: 2,
-            width: '70%',
-          }}
-        >
-          <Option value="Roboto">Roboto</Option>
-          <Option value="Arial">Arial</Option>
-          <Option value="Courier New">Courier New</Option>
-        </Select> */}
-        </Typography>
+     
+        </Typography> */}
 
 
 
@@ -124,30 +121,45 @@ const CreateCountdownPage = () => {
           variant="soft"
           size="lg"
           sx={{
+            mt: 'calc(var(--icon-size) / 2)',
             width: '90%',
+            height: '200px',
             maxWidth: 800,
             padding: 2,
             textAlign: 'center',
             marginBottom: 3,
             fontSize: '1.5rem',
             fontFamily: { selectedFont },
-            borderRadius: '50px'
+            borderRadius: '50px',
+            alignContent: 'center'
           }}
           value={eventName}
           onChange={(e) => setEventName(e.target.value)}
         />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
 
-        <DateTimePicker defaultValue={dayjs('2022-04-17T15:30')} />
-</LocalizationProvider>
+          <DateTimePicker defaultValue={dayjs(Date.now())} sx={{
+            color: '#ff0000'
+          }} />
+        </LocalizationProvider>
         <Box
           sx={{
             display: 'flex',
+            flexDirection: 'column',
             justifyContent: 'center',
             gap: 2,
             width: '80%',
             marginBottom: 3,
+            maxWidth: '80%',
+            overflow: 'auto', // Enable scrolling
             flexWrap: 'wrap',
+            // border: '2px solid red',
+
+            // Hide scrollbar
+            scrollbarWidth: 'none', // For Firefox
+            '&::-webkit-scrollbar': {
+              display: 'none', // For Chrome, Safari, and WebKit-based browsers
+            },
           }}
         >
           {categories.map((category, index) => (
@@ -156,34 +168,35 @@ const CreateCountdownPage = () => {
               sx={{
                 width: '20%',
                 minWidth: 100,
-                // backgroundColor: 'white',
+                maxWidth: 150,
+                height: 'fit-content',
                 textAlign: 'center',
                 boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                border: eventType === category.name ? '2px solid green' : '',
                 cursor: 'pointer',
                 '&:hover': {
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
                 },
               }}
+              onClick={() => setEventType(category.name)}
             >
               <AspectRatio
                 ratio="1"
                 sx={{
                   width: '100%',
-                  height: 200,
                   overflow: 'hidden',
                   borderRadius: '8px',
                   marginBottom: 2,
-                  backgroundColor: '#ff0000'
+                  backgroundColor: '#ff0000',
                 }}
               >
-                {/* <TimelapseIcon /> */}
                 {category.icon}
-
               </AspectRatio>
               <Typography level="h4">{category.name}</Typography>
             </Card>
           ))}
         </Box>
+
 
         <CardActions
           orientation="horizontal"
@@ -204,6 +217,7 @@ const CreateCountdownPage = () => {
 
       <ToastContainer />
     </Sheet>
+
   );
 };
 
